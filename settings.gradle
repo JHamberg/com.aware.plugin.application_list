@@ -1,0 +1,1 @@
+include ':com.aware.plugin.application_list', ':com.aware.plugin.application_list.lib'
