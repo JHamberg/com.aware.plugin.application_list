@@ -50,7 +50,7 @@ public class Plugin extends Aware_Plugin {
         CONTEXT_URIS = new Uri[]{ Provider.Brightness_Data.CONTENT_URI };
 
         //Activate plugin -- do this ALWAYS as the last thing (this will restart your own plugin and apply the settings)
-        Aware.startPlugin(this, "com.aware.plugin.screen_brightness");
+        Aware.startPlugin(this, "com.aware.plugin.application_list");
     }
 
     public static ContextProducer getContextProducer() {
@@ -72,16 +72,20 @@ public class Plugin extends Aware_Plugin {
             //Check if the user has toggled the debug messages
             DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
+            if(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST).length() == 0){
+                Aware.setSetting(this, Settings.FREQUENCY_APPLICATION_LIST, 1);
+            }
+
             try{
-                Scheduler.Schedule brightnessSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS);
-                if(brightnessSampler == null || brightnessSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_SCREEN_BRIGHTNESS))){
-                    brightnessSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS)
-                            .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_SCREEN_BRIGHTNESS)))
+                Scheduler.Schedule appSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS);
+                if(appSampler == null || appSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST))){
+                    appSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS)
+                            .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST)))
                             .setActionType(Scheduler.ACTION_TYPE_SERVICE)
-                            .setActionClass(getPackageName() + "/" + BrightnessService.class.getName());
-                    Scheduler.saveSchedule(this, brightnessSampler);
+                            .setActionClass(getPackageName() + "/" + ApplicationService.class.getName());
+                    Scheduler.saveSchedule(this, appSampler);
                     // Run once immediately
-                    Intent initialValues = new Intent(this, BrightnessService.class);
+                    Intent initialValues = new Intent(this, ApplicationService.class);
                     startService(initialValues);
                 }
             } catch(Exception e){
