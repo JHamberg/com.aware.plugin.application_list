@@ -12,7 +12,7 @@ import com.aware.Aware_Preferences;
 public class Settings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     //Plugin settings in XML @xml/preferences
-    public static final Long DEFAULT_FREQUENCY_APPLICATION_LIST = 15L;
+    public static final Long DEFAULT_FREQUENCY_APPLICATION_LIST = 10L;
     public static final String FIRST_RUN_APPLICATION_LIST = "first_run_application_list";
     public static final String STATUS_APPLICATION_LIST = "status_plugin_application_list";
     public static final String FREQUENCY_PLUGIN_APPLICATION_LIST = "frequency_plugin_application_list";

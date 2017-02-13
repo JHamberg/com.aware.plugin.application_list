@@ -70,11 +70,13 @@ public class Plugin extends Aware_Plugin {
         }
 
         if (permissions_ok) {
-            //Check if the user has toggled the debug messages
-            Aware.startInstallations(this);
+            DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
+
+            // Aware.startInstallations(this);
             Aware.setSetting(this, Aware_Preferences.STATUS_INSTALLATIONS, true);
 
             if(Aware.getSetting(getApplicationContext(), Settings.FREQUENCY_PLUGIN_APPLICATION_LIST).length() == 0){
+                Log.d(Plugin.TAG, "No interval specified, using default: " +  Settings.DEFAULT_FREQUENCY_APPLICATION_LIST);
                 Aware.setSetting(getApplicationContext(), Settings.FREQUENCY_PLUGIN_APPLICATION_LIST, Settings.DEFAULT_FREQUENCY_APPLICATION_LIST);
             }
 
@@ -86,7 +88,6 @@ public class Plugin extends Aware_Plugin {
                 Intent initialValues = new Intent(this, ApplicationService.class);
                 startService(initialValues);
             }
-
 
             try{
                 Scheduler.Schedule brightnessSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
