@@ -8,6 +8,8 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.aware.Aware;
+import com.aware.Aware_Preferences;
+import com.aware.Installations;
 import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
 
@@ -42,7 +44,6 @@ public class Plugin extends Aware_Plugin {
         //By default, AWARE asks access to the #Manifest.permission.WRITE_EXTERNAL_STORAGE
 
         //REQUIRED_PERMISSIONS.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
@@ -69,6 +70,8 @@ public class Plugin extends Aware_Plugin {
 
         if (permissions_ok) {
             //Check if the user has toggled the debug messages
+            Aware.startInstallations(this);
+            Aware.setSetting(this, Aware_Preferences.STATUS_INSTALLATIONS, true);
 
             String firstRun = Aware.getSetting(this, Settings.FIRST_RUN_APPLICATION_LIST);
             if(firstRun.length() == 0 || Boolean.parseBoolean(firstRun)){

@@ -7,6 +7,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import com.aware.Aware;
+import com.aware.Aware_Preferences;
 
 public class Settings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -30,6 +31,9 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
         }
         if(Aware.getSetting(this, FIRST_RUN_APPLICATION_LIST).length() == 0){
             Aware.setSetting(this, FIRST_RUN_APPLICATION_LIST, true);
+        }
+        if(Aware.getSetting(this, Aware_Preferences.STATUS_INSTALLATIONS).length() == 0){
+            Aware.setSetting(this, Aware_Preferences.STATUS_INSTALLATIONS, true);
         }
     }
 

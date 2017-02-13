@@ -5,11 +5,13 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.PowerManager;
 import android.util.Log;
 
 import com.aware.Aware;
@@ -68,6 +70,10 @@ public class ApplicationService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, Plugin.TAG);
+        wl.acquire();
+
         Log.d(Plugin.TAG, "Received intent to update application list");
 
         ContentValues data = new ContentValues();
@@ -84,6 +90,7 @@ public class ApplicationService extends IntentService{
         if(producer != null){
             producer.onContext();
         }
+        wl.release();
     }
 
     public String getAllApplications() {
