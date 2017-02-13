@@ -90,13 +90,13 @@ public class Plugin extends Aware_Plugin {
             }
 
             try{
-                Scheduler.Schedule brightnessSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
-                if(brightnessSampler == null || brightnessSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_PLUGIN_APPLICATION_LIST))){
-                    brightnessSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_APPLICATION_LIST)
+                Scheduler.Schedule applicationSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
+                if(applicationSampler == null || applicationSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_PLUGIN_APPLICATION_LIST))){
+                    applicationSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_APPLICATION_LIST)
                             .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_PLUGIN_APPLICATION_LIST)))
                             .setActionType(Scheduler.ACTION_TYPE_SERVICE)
                             .setActionClass(getPackageName() + "/" +  ApplicationService.class.getName());
-                    Scheduler.saveSchedule(this, brightnessSampler);
+                    Scheduler.saveSchedule(this, applicationSampler);
                 }
             } catch(Exception e){
                 e.printStackTrace();
