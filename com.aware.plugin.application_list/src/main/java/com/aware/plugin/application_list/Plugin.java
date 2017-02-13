@@ -11,9 +11,11 @@ import com.aware.Aware;
 import com.aware.Aware_Preferences;
 import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
+import com.aware.utils.Scheduler;
 
 public class Plugin extends Aware_Plugin {
     private static ContextProducer contextProducer;
+    public static final String SCHEDULER_PLUGIN_APPLICATION_LIST = "SCHEDULER_PLUGIN_APPLICATION_LIST";
 
     @Override
     public void onCreate() {
@@ -72,6 +74,10 @@ public class Plugin extends Aware_Plugin {
             Aware.startInstallations(this);
             Aware.setSetting(this, Aware_Preferences.STATUS_INSTALLATIONS, true);
 
+            if(Aware.getSetting(getApplicationContext(), Settings.FREQUENCY_PLUGIN_APPLICATION_LIST).length() == 0){
+                Aware.setSetting(getApplicationContext(), Settings.FREQUENCY_PLUGIN_APPLICATION_LIST, Settings.DEFAULT_FREQUENCY_APPLICATION_LIST);
+            }
+
             String firstRun = Aware.getSetting(this, Settings.FIRST_RUN_APPLICATION_LIST);
             if(firstRun.length() == 0 || Boolean.parseBoolean(firstRun)){
                 Aware.setSetting(this, Settings.FIRST_RUN_APPLICATION_LIST, false);
@@ -79,6 +85,20 @@ public class Plugin extends Aware_Plugin {
                 // Collect application list on first run
                 Intent initialValues = new Intent(this, ApplicationService.class);
                 startService(initialValues);
+            }
+
+
+            try{
+                Scheduler.Schedule brightnessSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
+                if(brightnessSampler == null || brightnessSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_PLUGIN_APPLICATION_LIST))){
+                    brightnessSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_APPLICATION_LIST)
+                            .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_PLUGIN_APPLICATION_LIST)))
+                            .setActionType(Scheduler.ACTION_TYPE_SERVICE)
+                            .setActionClass(getPackageName() + "/" +  ApplicationService.class.getName());
+                    Scheduler.saveSchedule(this, brightnessSampler);
+                }
+            } catch(Exception e){
+                e.printStackTrace();
             }
 
             // No need to schedule anything here, we use the intent-service

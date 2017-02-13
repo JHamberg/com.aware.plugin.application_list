@@ -12,7 +12,6 @@ public class ApplicationReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        // TODO: Can we skip this phase?
         Log.d(Plugin.TAG, "Received application intent, starting application service");
         Intent service = new Intent(context, ApplicationService.class);
         startWakefulService(context, service);

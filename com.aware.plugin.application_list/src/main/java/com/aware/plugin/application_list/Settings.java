@@ -12,8 +12,10 @@ import com.aware.Aware_Preferences;
 public class Settings extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     //Plugin settings in XML @xml/preferences
+    public static final Long DEFAULT_FREQUENCY_APPLICATION_LIST = 15L;
     public static final String FIRST_RUN_APPLICATION_LIST = "first_run_application_list";
     public static final String STATUS_APPLICATION_LIST = "status_plugin_application_list";
+    public static final String FREQUENCY_PLUGIN_APPLICATION_LIST = "frequency_plugin_application_list";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,9 @@ public class Settings extends PreferenceActivity implements SharedPreferences.On
     @Override
     protected void onResume() {
         super.onResume();
+        if(Aware.getSetting(getApplicationContext(), FREQUENCY_PLUGIN_APPLICATION_LIST).length() == 0){
+            Aware.setSetting(getApplicationContext(), FREQUENCY_PLUGIN_APPLICATION_LIST, DEFAULT_FREQUENCY_APPLICATION_LIST);
+        }
         if (Aware.getSetting(getApplicationContext(), STATUS_APPLICATION_LIST).length() == 0) {
             Aware.setSetting(getApplicationContext(), STATUS_APPLICATION_LIST, true);
         }
