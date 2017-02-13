@@ -13,8 +13,8 @@ import com.aware.utils.Aware_Plugin;
 import com.aware.utils.Scheduler;
 
 public class Plugin extends Aware_Plugin {
-    public static final String ACTION_PLUGIN_SCREEN_BRIGHTNESS = "ACTION_PLUGIN_SCREEN_BRIGHTNESS";
-    public static final String SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS = "SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS";
+    public static final String ACTION_APPLIST_UPDATED = "ACTION_PLUGIN_APPLICATION_LIST";
+    public static final String SCHEDULER_PLUGIN_APPLICATION_LIST = "SCHEDULER_PLUGIN_APPLICATION_LIST";
     private static ContextProducer contextProducer;
 
     @Override
@@ -31,9 +31,9 @@ public class Plugin extends Aware_Plugin {
         CONTEXT_PRODUCER = new ContextProducer() {
             @Override
             public void onContext() {
-                if(Aware.DEBUG) Log.d(Plugin.TAG, "Context changed, sending broadcast to UI!");
-                Intent updateUiIntent = new Intent(ACTION_PLUGIN_SCREEN_BRIGHTNESS);
-                sendBroadcast(updateUiIntent);
+                if(Aware.DEBUG) Log.d(Plugin.TAG, "Context changed!");
+                // Intent updateUiIntent = new Intent(ACTION_APPLIST_UPDATED);
+                // sendBroadcast(updateUiIntent);
             }
         };
 
@@ -47,7 +47,7 @@ public class Plugin extends Aware_Plugin {
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
-        CONTEXT_URIS = new Uri[]{ Provider.Brightness_Data.CONTENT_URI };
+        CONTEXT_URIS = new Uri[]{ Provider.Applist_Data.CONTENT_URI };
 
         //Activate plugin -- do this ALWAYS as the last thing (this will restart your own plugin and apply the settings)
         Aware.startPlugin(this, "com.aware.plugin.application_list");
@@ -77,9 +77,9 @@ public class Plugin extends Aware_Plugin {
             }
 
             try{
-                Scheduler.Schedule appSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS);
+                Scheduler.Schedule appSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
                 if(appSampler == null || appSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST))){
-                    appSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS)
+                    appSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_APPLICATION_LIST)
                             .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST)))
                             .setActionType(Scheduler.ACTION_TYPE_SERVICE)
                             .setActionClass(getPackageName() + "/" + ApplicationService.class.getName());
@@ -105,7 +105,7 @@ public class Plugin extends Aware_Plugin {
     public void onDestroy() {
         super.onDestroy();
 
-        Scheduler.removeSchedule(this, SCHEDULER_PLUGIN_SCREEN_BRIGHTNESS);
+        Scheduler.removeSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
 
         //Stop AWARE's instance running inside the plugin package
         Aware.stopAWARE();

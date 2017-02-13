@@ -6,26 +6,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="RtlHardcoded">
-
-    <TextView
-        android:paddingTop="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="18sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Brightness: 38"
-        android:id="@+id/brightness"
-        android:textColor="#000"/>
-
-    <TextView
-        android:paddingTop="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="18sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Auto-brightness: true"
-        android:id="@+id/autoBrightness"
-        android:textColor="#000"/>
 </LinearLayout>

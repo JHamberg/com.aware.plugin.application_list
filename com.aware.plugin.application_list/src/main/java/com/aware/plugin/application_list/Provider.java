@@ -49,23 +49,21 @@ public class Provider extends ContentProvider {
      * Create one of these per database table
      * In this example, we are adding example columns
      */
-    public static final class Brightness_Data implements AWAREColumns {
+    public static final class Applist_Data implements AWAREColumns {
         public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DB_TBL_application_list);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.com.aware.plugin.application_list";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.com.aware.plugin.application_list";
 
         //Note: integers and strings don't need a type prefix_
-        public static final String BRIGHTNESS = "brightness";
-        public static final String AUTO_BRIGHTNESS = "auto_brightness";
+        public static final String APPLICATION_LIST = "application_list";
     }
 
     //Define each database table fields
     private static final String DB_TBL_application_list_FIELDS =
-        Brightness_Data._ID + " integer primary key autoincrement," +
-        Brightness_Data.TIMESTAMP + " real default 0," +
-        Brightness_Data.DEVICE_ID + " text default ''," +
-        Brightness_Data.BRIGHTNESS + " text default ''," +
-        Brightness_Data.AUTO_BRIGHTNESS + " text default ''";
+        Applist_Data._ID + " integer primary key autoincrement," +
+        Applist_Data.TIMESTAMP + " real default 0," +
+        Applist_Data.DEVICE_ID + " text default ''," +
+        Applist_Data.APPLICATION_LIST + " text default ''";
 
     /**
      * Share the fields with AWARE so we can replicate the table schema on the server
@@ -78,7 +76,7 @@ public class Provider extends ContentProvider {
     private static UriMatcher sUriMatcher;
     private static SQLiteDatabase database;
     //For each table, create a hashmap needed for database queries
-    private static HashMap<String, String> tableScreenBrightness;
+    private static HashMap<String, String> tableApplist;
 
     /**
      * Initialise database: create the database file, update if needed, etc. DO NOT CHANGE ME
@@ -106,12 +104,11 @@ public class Provider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, DATABASE_TABLES[0] + "/#", TABLE_application_list_ITEM);
 
         //Create each table hashmap so Android knows how to insert data to the database. Put ALL table fields.
-        tableScreenBrightness = new HashMap<>();
-        tableScreenBrightness.put(Brightness_Data._ID, Brightness_Data._ID);
-        tableScreenBrightness.put(Brightness_Data.TIMESTAMP, Brightness_Data.TIMESTAMP);
-        tableScreenBrightness.put(Brightness_Data.DEVICE_ID, Brightness_Data.DEVICE_ID);
-        tableScreenBrightness.put(Brightness_Data.BRIGHTNESS, Brightness_Data.BRIGHTNESS);
-        tableScreenBrightness.put(Brightness_Data.AUTO_BRIGHTNESS, Brightness_Data.AUTO_BRIGHTNESS);
+        tableApplist = new HashMap<>();
+        tableApplist.put(Applist_Data._ID, Applist_Data._ID);
+        tableApplist.put(Applist_Data.TIMESTAMP, Applist_Data.TIMESTAMP);
+        tableApplist.put(Applist_Data.DEVICE_ID, Applist_Data.DEVICE_ID);
+        tableApplist.put(Applist_Data.APPLICATION_LIST, Applist_Data.APPLICATION_LIST);
 
         return true;
     }
@@ -130,7 +127,7 @@ public class Provider extends ContentProvider {
             //Add all tables' DIR entries, with the right table index
             case TABLE_application_list_DIR:
                 qb.setTables(DATABASE_TABLES[0]);
-                qb.setProjectionMap(tableScreenBrightness); //the hashmap of the table
+                qb.setProjectionMap(tableApplist); //the hashmap of the table
                 break;
 
             default:
@@ -157,9 +154,9 @@ public class Provider extends ContentProvider {
 
             //Add each table indexes DIR and ITEM
             case TABLE_application_list_DIR:
-                return Brightness_Data.CONTENT_TYPE;
+                return Applist_Data.CONTENT_TYPE;
             case TABLE_application_list_ITEM:
-                return Brightness_Data.CONTENT_ITEM_TYPE;
+                return Applist_Data.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -181,9 +178,9 @@ public class Provider extends ContentProvider {
 
             //Add each table DIR case
             case TABLE_application_list_DIR:
-                _id = database.insert(DATABASE_TABLES[0], Brightness_Data.DEVICE_ID, values);
+                _id = database.insert(DATABASE_TABLES[0], Applist_Data.DEVICE_ID, values);
                 if (_id > 0) {
-                    Uri dataUri = ContentUris.withAppendedId(Brightness_Data.CONTENT_URI, _id);
+                    Uri dataUri = ContentUris.withAppendedId(Applist_Data.CONTENT_URI, _id);
                     getContext().getContentResolver().notifyChange(dataUri, null);
                     return dataUri;
                 }

@@ -33,19 +33,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
  * Created by Jonatan Hamberg on 6.2.2017.
  */
 public class ApplicationService extends IntentService{
-    public static String brightness;
-    public static String autoBrightness;
     private static final String UNKNOWN_STRING = "unknown";
     private static final int UNKNOWN_INT = -1;
-    private static final String INFORMER_PROCESS = "PROCESS";
-    private static final String INFORMER_SERVICE = "SERVICE";
     private static final int MAX_SERVICES = 255;
 
     private class AppPackage {
@@ -73,16 +68,14 @@ public class ApplicationService extends IntentService{
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(Plugin.TAG, "Received intent to update brightness");
+        Log.d(Plugin.TAG, "Received intent to update application list");
 
-        /* ContentValues data = new ContentValues();
-        data.put(Provider.Brightness_Data.TIMESTAMP, System.currentTimeMillis());
-        data.put(Provider.Brightness_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
+        ContentValues data = new ContentValues();
+        data.put(Provider.Applist_Data.TIMESTAMP, System.currentTimeMillis());
+        data.put(Provider.Applist_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
+        data.put(Provider.Applist_Data.APPLICATION_LIST, getAllApplications());
 
-        data.put(Provider.Brightness_Data.BRIGHTNESS, brightness);
-        data.put(Provider.Brightness_Data.AUTO_BRIGHTNESS, autoBrightness);
-
-        getContentResolver().insert(Provider.Brightness_Data.CONTENT_URI, data);
+        getContentResolver().insert(Provider.Applist_Data.CONTENT_URI, data);
         if(Aware.DEBUG){
             Log.d(Plugin.TAG, data.toString());
         }
@@ -90,15 +83,6 @@ public class ApplicationService extends IntentService{
         Aware_Plugin.ContextProducer producer = Plugin.getContextProducer();
         if(producer != null){
             producer.onContext();
-        }*/
-
-        String apps = getAllApplications();
-        int maxLogSize = 1000;
-        for(int i=0; i<= apps.length() / maxLogSize; i++){
-            int start = i * maxLogSize;
-            int end = (i + 1) * maxLogSize;
-            end = end > apps.length() ? apps.length() : end;
-            Log.d(Plugin.TAG, apps.substring(start, end));
         }
     }
 
