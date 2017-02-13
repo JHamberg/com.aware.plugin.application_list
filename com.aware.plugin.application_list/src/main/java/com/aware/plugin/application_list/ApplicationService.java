@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.database.Cursor;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -45,6 +46,9 @@ public class ApplicationService extends IntentService{
     private static final int UNKNOWN_INT = -1;
     private static final int MAX_SERVICES = 255;
 
+    // TODO: Add as a setting
+    private static final int MINIMUM_WAIT_DELAY = 60000;
+
     private class AppPackage {
         String packageName = UNKNOWN_STRING;
         String versionName = UNKNOWN_STRING;
@@ -69,19 +73,40 @@ public class ApplicationService extends IntentService{
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent intent)
+    {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, Plugin.TAG);
         wl.acquire();
 
         Log.d(Plugin.TAG, "Received intent to update application list");
-        addApplications(System.currentTimeMillis());
 
-        Aware_Plugin.ContextProducer producer = Plugin.getContextProducer();
-        if(producer != null){
-            producer.onContext();
+        long now = System.currentTimeMillis();
+        long then = getLatestTimestamp();
+        if(then == -1 || now - then > MINIMUM_WAIT_DELAY){
+            addApplications(now);
+            Aware_Plugin.ContextProducer producer = Plugin.getContextProducer();
+            if(producer != null){
+                producer.onContext();
+            }
+        } else {
+            Log.d(Plugin.TAG, "Not enough time passed since last context update. Skipping.");
         }
+
         wl.release();
+    }
+
+    public Long getLatestTimestamp(){
+        Long result = -1L;
+        Cursor latest = getApplicationContext().getContentResolver().query(Provider.Application_Data.CONTENT_URI, null, null, null, Provider.Application_Data.TIMESTAMP + " DESC LIMIT 1");
+        if(latest != null && latest.moveToFirst()){
+            result = latest.getLong(latest.getColumnIndex(Provider.Application_Data.TIMESTAMP));
+            Log.d(Plugin.TAG, "Last context update happened at " + result);
+        }
+        if(latest != null && !latest.isClosed()){
+            latest.close();
+        }
+        return result;
     }
 
     public void addApplications(long timestamp) {
