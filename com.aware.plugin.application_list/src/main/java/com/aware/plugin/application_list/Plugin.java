@@ -1,5 +1,6 @@
 package com.aware.plugin.application_list;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -7,19 +8,17 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.aware.Aware;
-import com.aware.Aware_Preferences;
 import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
-import com.aware.utils.Scheduler;
 
 public class Plugin extends Aware_Plugin {
-    public static final String ACTION_APPLIST_UPDATED = "ACTION_PLUGIN_APPLICATION_LIST";
-    public static final String SCHEDULER_PLUGIN_APPLICATION_LIST = "SCHEDULER_PLUGIN_APPLICATION_LIST";
     private static ContextProducer contextProducer;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        REQUIRED_PERMISSIONS.add(Manifest.permission.WAKE_LOCK);
+
 
         TAG = "AWARE::"+getResources().getString(R.string.app_name);
 
@@ -70,27 +69,17 @@ public class Plugin extends Aware_Plugin {
 
         if (permissions_ok) {
             //Check if the user has toggled the debug messages
-            DEBUG = Aware.getSetting(this, Aware_Preferences.DEBUG_FLAG).equals("true");
 
-            if(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST).length() == 0){
-                Aware.setSetting(this, Settings.FREQUENCY_APPLICATION_LIST, 1);
+            String firstRun = Aware.getSetting(this, Settings.FIRST_RUN_APPLICATION_LIST);
+            if(firstRun.length() == 0 || Boolean.parseBoolean(firstRun)){
+                Aware.setSetting(this, Settings.FIRST_RUN_APPLICATION_LIST, false);
+
+                // Collect application list on first run
+                Intent initialValues = new Intent(this, ApplicationService.class);
+                startService(initialValues);
             }
 
-            try{
-                Scheduler.Schedule appSampler = Scheduler.getSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
-                if(appSampler == null || appSampler.getInterval() != Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST))){
-                    appSampler = new Scheduler.Schedule(SCHEDULER_PLUGIN_APPLICATION_LIST)
-                            .setInterval(Long.parseLong(Aware.getSetting(this, Settings.FREQUENCY_APPLICATION_LIST)))
-                            .setActionType(Scheduler.ACTION_TYPE_SERVICE)
-                            .setActionClass(getPackageName() + "/" + ApplicationService.class.getName());
-                    Scheduler.saveSchedule(this, appSampler);
-                    // Run once immediately
-                    Intent initialValues = new Intent(this, ApplicationService.class);
-                    startService(initialValues);
-                }
-            } catch(Exception e){
-                e.printStackTrace();
-            }
+            // No need to schedule anything here, we use the intent-service
         } else {
             Intent permissions = new Intent(this, PermissionsHandler.class);
             permissions.putExtra(PermissionsHandler.EXTRA_REQUIRED_PERMISSIONS, REQUIRED_PERMISSIONS);
@@ -104,8 +93,6 @@ public class Plugin extends Aware_Plugin {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        Scheduler.removeSchedule(this, SCHEDULER_PLUGIN_APPLICATION_LIST);
 
         //Stop AWARE's instance running inside the plugin package
         Aware.stopAWARE();
