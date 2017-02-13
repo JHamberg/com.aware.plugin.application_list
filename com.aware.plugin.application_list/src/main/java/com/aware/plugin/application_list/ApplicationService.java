@@ -75,16 +75,7 @@ public class ApplicationService extends IntentService{
         wl.acquire();
 
         Log.d(Plugin.TAG, "Received intent to update application list");
-
-        ContentValues data = new ContentValues();
-        data.put(Provider.Applist_Data.TIMESTAMP, System.currentTimeMillis());
-        data.put(Provider.Applist_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
-        data.put(Provider.Applist_Data.APPLICATION_LIST, getAllApplications());
-
-        getContentResolver().insert(Provider.Applist_Data.CONTENT_URI, data);
-        if(Aware.DEBUG){
-            Log.d(Plugin.TAG, data.toString());
-        }
+        addApplications(System.currentTimeMillis());
 
         Aware_Plugin.ContextProducer producer = Plugin.getContextProducer();
         if(producer != null){
@@ -93,13 +84,12 @@ public class ApplicationService extends IntentService{
         wl.release();
     }
 
-    public String getAllApplications() {
+    public void addApplications(long timestamp) {
         Map<String, AppPackage> pkgInfos = new HashMap<>();
         pkgInfos = addInstalledPackages(pkgInfos);
         pkgInfos = addRunningProcessInfo(pkgInfos);
         pkgInfos = addRunningServiceInfo(pkgInfos);
 
-        JSONArray applications = new JSONArray();
         for(AppPackage app : pkgInfos.values()){
             try {
                 JSONObject application = new JSONObject();
@@ -133,14 +123,16 @@ public class ApplicationService extends IntentService{
                 }
                 application.put("signatures", signatures);
 
-                applications.put(application);
+                // Create a new row for this application
+                ContentValues packageData = new ContentValues();
+                packageData.put(Provider.Application_Data.TIMESTAMP, timestamp);
+                packageData.put(Provider.Application_Data.DEVICE_ID, Aware.getSetting(getApplicationContext(), Aware_Preferences.DEVICE_ID));
+                packageData.put(Provider.Application_Data.APPLICATION, application.toString());
+                getContentResolver().insert(Provider.Application_Data.CONTENT_URI, packageData);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
-        // TODO: JSON conversion
-        return applications.toString();
     }
 
 

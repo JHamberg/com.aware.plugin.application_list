@@ -49,21 +49,21 @@ public class Provider extends ContentProvider {
      * Create one of these per database table
      * In this example, we are adding example columns
      */
-    public static final class Applist_Data implements AWAREColumns {
+    public static final class Application_Data implements AWAREColumns {
         public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + DB_TBL_application_list);
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.com.aware.plugin.application_list";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.com.aware.plugin.application_list";
 
         //Note: integers and strings don't need a type prefix_
-        public static final String APPLICATION_LIST = "application_list";
+        public static final String APPLICATION = "application";
     }
 
     //Define each database table fields
     private static final String DB_TBL_application_list_FIELDS =
-        Applist_Data._ID + " integer primary key autoincrement," +
-        Applist_Data.TIMESTAMP + " real default 0," +
-        Applist_Data.DEVICE_ID + " text default ''," +
-        Applist_Data.APPLICATION_LIST + " text default ''";
+        Application_Data._ID + " integer primary key autoincrement," +
+        Application_Data.TIMESTAMP + " real default 0," +
+        Application_Data.DEVICE_ID + " text default ''," +
+        Application_Data.APPLICATION + " text default ''";
 
     /**
      * Share the fields with AWARE so we can replicate the table schema on the server
@@ -105,10 +105,10 @@ public class Provider extends ContentProvider {
 
         //Create each table hashmap so Android knows how to insert data to the database. Put ALL table fields.
         tableApplist = new HashMap<>();
-        tableApplist.put(Applist_Data._ID, Applist_Data._ID);
-        tableApplist.put(Applist_Data.TIMESTAMP, Applist_Data.TIMESTAMP);
-        tableApplist.put(Applist_Data.DEVICE_ID, Applist_Data.DEVICE_ID);
-        tableApplist.put(Applist_Data.APPLICATION_LIST, Applist_Data.APPLICATION_LIST);
+        tableApplist.put(Application_Data._ID, Application_Data._ID);
+        tableApplist.put(Application_Data.TIMESTAMP, Application_Data.TIMESTAMP);
+        tableApplist.put(Application_Data.DEVICE_ID, Application_Data.DEVICE_ID);
+        tableApplist.put(Application_Data.APPLICATION, Application_Data.APPLICATION);
 
         return true;
     }
@@ -154,9 +154,9 @@ public class Provider extends ContentProvider {
 
             //Add each table indexes DIR and ITEM
             case TABLE_application_list_DIR:
-                return Applist_Data.CONTENT_TYPE;
+                return Application_Data.CONTENT_TYPE;
             case TABLE_application_list_ITEM:
-                return Applist_Data.CONTENT_ITEM_TYPE;
+                return Application_Data.CONTENT_ITEM_TYPE;
 
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -178,9 +178,9 @@ public class Provider extends ContentProvider {
 
             //Add each table DIR case
             case TABLE_application_list_DIR:
-                _id = database.insert(DATABASE_TABLES[0], Applist_Data.DEVICE_ID, values);
+                _id = database.insert(DATABASE_TABLES[0], Application_Data.DEVICE_ID, values);
                 if (_id > 0) {
-                    Uri dataUri = ContentUris.withAppendedId(Applist_Data.CONTENT_URI, _id);
+                    Uri dataUri = ContentUris.withAppendedId(Application_Data.CONTENT_URI, _id);
                     getContext().getContentResolver().notifyChange(dataUri, null);
                     return dataUri;
                 }

@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.aware.Aware;
 import com.aware.Aware_Preferences;
-import com.aware.Installations;
 import com.aware.ui.PermissionsHandler;
 import com.aware.utils.Aware_Plugin;
 
@@ -47,7 +46,7 @@ public class Plugin extends Aware_Plugin {
         //To sync data to the server, you'll need to set this variables from your ContentProvider
         DATABASE_TABLES = Provider.DATABASE_TABLES;
         TABLES_FIELDS = Provider.TABLES_FIELDS;
-        CONTEXT_URIS = new Uri[]{ Provider.Applist_Data.CONTENT_URI };
+        CONTEXT_URIS = new Uri[]{ Provider.Application_Data.CONTENT_URI };
 
         //Activate plugin -- do this ALWAYS as the last thing (this will restart your own plugin and apply the settings)
         Aware.startPlugin(this, "com.aware.plugin.application_list");
